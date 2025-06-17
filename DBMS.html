@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSS SQL Query Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Deep Night -->
+    <!-- Application Structure Plan: The application is structured as a single-page interface with a fixed sidebar for navigation and a main content area for displaying SQL query categories. This structure facilitates easy browsing of different types of queries (e.g., General, Student, Teacher, Upload) and update operations. Each query is presented in a collapsible card, allowing users to focus on one query at a time and reveal its details as needed. This design prioritizes content organization, scannability, and on-demand information retrieval, making it intuitive for users to explore and understand the various SQL operations across different devices. -->
+    <!-- Visualization & Content Choices: Report Info: SQL queries for database operations. -> Goal: Provide an interactive and easily digestible reference for SQL queries. -> Viz/Presentation Method: Textual content (query descriptions and SQL code) is presented within collapsible "cards". -> Interaction: Navigation links filter the displayed queries by category. Each query card has a "Show Query" button to reveal the SQL code, promoting active engagement. Justification: The interactive cards enhance readability and prevent information overload. Categorization aids in quick lookup and understanding of related queries. The dark theme provides a sleek, elegant aesthetic. Library/Method: Vanilla JS for navigation and toggle functionality. No Chart.js or Plotly.js is used as the content is purely textual SQL queries, and visual charts would not enhance understanding in this context. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Tailwind's gray-900 or near black */
+            color: #e2e8f0; /* Tailwind's gray-200 for white-ish text */
+        }
+        .active-nav {
+            background-color: #2b6cb0; /* blue-700 or similar dark blue for active state */
+            color: white;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .query-code {
+            display: none;
+        }
+
+        /* Ensure preformatted text scrolls horizontally if content is too wide */
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap; /* Allows long lines to wrap while preserving other whitespace */
+            word-wrap: break-word; /* Breaks long words if they exceed the container */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <div id="app" class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Header for Mobile -->
+        <header class="md:hidden bg-gray-800 shadow-md p-4 flex justify-between items-center w-full">
+            <h1 class="text-xl font-bold text-gray-100">SQL Explorer</h1>
+            <select id="mobile-nav" class="p-2 rounded-md border border-gray-700 bg-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="all">All Queries</option>
+                <option value="student">Student Queries</option>
+                <option value="teacher">Teacher Queries</option>
+                <option value="upload">Upload Queries</option>
+                <option value="update">Update Operations</option>
+            </select>
+        </header>
+
+        <!-- Sidebar Navigation for Desktop -->
+        <nav id="sidebar" class="hidden md:flex flex-col w-64 bg-gray-800 shadow-lg p-4 space-y-2 flex-shrink-0 min-h-screen">
+            <h1 class="text-2xl font-bold text-gray-100 mb-4">SQL Explorer</h1>
+            <p class="text-sm text-gray-400 mb-6">Database Queries Reference</p>
+            <a href="#all" class="nav-link text-left w-full px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">All Queries</a>
+            <a href="#student" class="nav-link text-left w-full px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Student Queries</a>
+            <a href="#teacher" class="nav-link text-left w-full px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Teacher Queries</a>
+            <a href="#upload" class="nav-link text-left w-full px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Upload Queries</a>
+            <a href="#update" class="nav-link text-left w-full px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Update Operations</a>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            
+            <!-- Section: All Queries -->
+            <section id="all" class="content-section space-y-6">
+                <div class="prose max-w-full lg:max-w-none text-gray-200">
+                    <h2 class="text-3xl sm:text-4xl font-bold border-b border-gray-700 pb-2 text-gray-100 mb-4">All SQL Queries</h2>
+                    <p class="text-lg sm:text-xl text-gray-400">Browse all available SQL queries for the Student, Teacher, and Upload entities. Each query card provides a description and the corresponding SQL code, which you can reveal by clicking "Show Query".</p>
+                </div>
+            </section>
+
+            <!-- Section: Student Queries -->
+            <section id="student" class="content-section space-y-6">
+                <div class="prose max-w-full lg:max-w-none text-gray-200">
+                    <h2 class="text-3xl sm:text-4xl font-bold border-b border-gray-700 pb-2 text-gray-100 mb-4">Student Related Queries</h2>
+                    <p class="text-lg sm:text-xl text-gray-400">This section focuses on SQL queries specifically related to student data and their upload activities.</p>
+                </div>
+            </section>
+
+            <!-- Section: Teacher Queries -->
+            <section id="teacher" class="content-section space-y-6">
+                <div class="prose max-w-full lg:max-w-none text-gray-200">
+                    <h2 class="text-3xl sm:text-4xl font-bold border-b border-gray-700 pb-2 text-gray-100 mb-4">Teacher Related Queries</h2>
+                    <p class="text-lg sm:text-xl text-gray-400">This section features SQL queries focused on teacher data, their email domains, and uploads received.</p>
+                </div>
+            </section>
+
+            <!-- Section: Upload Queries -->
+            <section id="upload" class="content-section space-y-6">
+                <div class="prose max-w-full lg:max-w-none text-gray-200">
+                    <h2 class="text-3xl sm:text-4xl font-bold border-b border-gray-700 pb-2 text-gray-100 mb-4">Upload Related Queries</h2>
+                    <p class="text-lg sm:text-xl text-gray-400">This section contains SQL queries that focus on upload entries, file details, and various statistics related to uploaded content.</p>
+                </div>
+            </section>
+
+            <!-- Section: Update Operations -->
+            <section id="update" class="content-section space-y-6">
+                <div class="prose max-w-full lg:max-w-none text-gray-200">
+                    <h2 class="text-3xl sm:text-4xl font-bold border-b border-gray-700 pb-2 text-gray-100 mb-4">Update Operations</h2>
+                    <p class="text-lg sm:text-xl text-gray-400">This section presents SQL commands for updating records within the student, teacher, and upload entities.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const contentSections = document.querySelectorAll('.content-section');
+            // Removed sidebarToggle and sidebar elements as they are not used in this reverted version.
+
+            // Data for All Queries section (original numbering)
+            const allQueriesData = [
+                {
+                    title: "1. Show the earliest upload entry along with student and teacher names:",
+                    code: `SELECT u.u_id, u.u_date, s.s_name, t.t_name, u.title
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+ORDER BY u.u_date ASC
+LIMIT 1;`
+                },
+                {
+                    title: "2. Show a report of student uploads grouped by semester:",
+                    code: `SELECT s.semester,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.semester;`
+                },
+                {
+                    title: "3. List students whose names start with 'A' and have made at least one upload:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+JOIN upload u ON s.s_id = u.s_id
+WHERE s.s_name LIKE 'A%'
+GROUP BY s.s_id;`
+                },
+                {
+                    title: "4. Find teachers whose email domains are 'gmail.com' and have received uploads:",
+                    code: `SELECT t.t_name, t.t_email,
+COUNT(u.u_id) AS total_uploads_received
+FROM teacher t
+JOIN upload u ON t.t_id = u.t_id
+WHERE t.t_email LIKE '%@gmail.com'
+GROUP BY t.t_id, t.t_name, t.t_email;`
+                },
+                {
+                    title: "5. Count how many students per course have uploaded files:",
+                    code: `SELECT student.course,
+COUNT(DISTINCT student.s_id) AS students_uploaded
+FROM student
+JOIN upload ON student.s_id = upload.s_id
+GROUP BY student.course;`
+                },
+                {
+                    title: "6. Show the number of uploads each teacher received:",
+                    code: `SELECT teacher.t_name,
+COUNT(upload.u_id) AS uploads_received
+FROM upload
+INNER JOIN teacher ON upload.t_id = teacher.t_id
+GROUP BY teacher.t_id;`
+                },
+                {
+                    title: "7. List all teachers who have received uploads from students in the 4th semester:",
+                    code: `SELECT teacher.t_name,
+COUNT(upload.u_id) AS total_uploads_received
+FROM upload
+INNER JOIN student ON upload.s_id = student.s_id
+INNER JOIN teacher ON upload.t_id = teacher.t_id
+WHERE student.semester = '4th semester'
+GROUP BY teacher.t_id, teacher.t_name;`
+                },
+                {
+                    title: "8. Get titles and upload dates for each file uploaded under the 'Economics' department:",
+                    code: `SELECT u.title, u.u_date, t.t_dept
+FROM upload u
+INNER JOIN teacher t ON u.t_id = t.t_id
+WHERE t.t_dept = 'Economics';`
+                },
+                {
+                    title: "9. List all uploaded file titles with student and teacher names involved:",
+                    code: `SELECT u.title, s.s_name AS student, t.t_name AS teacher
+FROM upload u
+INNER JOIN student s ON u.s_id = s.s_id
+INNER JOIN teacher t ON u.t_id = t.t_id;`
+                },
+                {
+                    title: "10. List upload titles along with semester of the student who uploaded it:",
+                    code: `SELECT u.title, s.semester
+FROM upload u
+INNER JOIN student s ON u.s_id = s.s_id;`
+                },
+                {
+                    title: "11. Count how many students per course have uploaded files (duplicate of 5, but including for completeness):",
+                    code: `SELECT s.course,
+COUNT(DISTINCT s.s_id) AS students_uploaded
+FROM student
+JOIN upload ON student.s_id = upload.s_id
+GROUP BY s.course;`
+                },
+                {
+                    title: "12. All students who uploaded more than one file, including their name, total uploads, and the list of teachers they've uploaded to all grouped by student:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads,
+GROUP_CONCAT(DISTINCT t.t_name SEPARATOR ',') AS uploaded_to_teachers
+FROM student s
+JOIN upload u ON s.s_id = u.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.s_id
+HAVING total_uploads > 1
+ORDER BY total_uploads DESC;`
+                },
+                {
+                    title: "13. For each teacher, list the latest file they received (by upload date):",
+                    code: `SELECT t.t_name, u.file, u.u_date
+FROM upload u
+JOIN teacher t ON u.t_id = t.t_id
+WHERE
+(t.t_id, u.u_date) IN (
+    SELECT t_id, MAX(u_date)
+    FROM upload
+    GROUP BY t_id
+);`
+                },
+                {
+                    title: "14. Display the teacher and the total number of students they have supervised uploads for:",
+                    code: `SELECT t.t_name,
+COUNT(DISTINCT u.s_id) AS student_supervised
+FROM upload u
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY t.t_id;`
+                },
+                {
+                    title: "15. Get names of students and the titles of files they uploaded under teachers from the 'Psychology' department:",
+                    code: `SELECT s.s_name, u.title, t.t_name
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+WHERE t.t_dept = 'Psychology';`
+                },
+                {
+                    title: "16. Display all uploads with their file extensions extracted:",
+                    code: `SELECT u.title, u.file,
+SUBSTRING_INDEX(u.file, '.', -1) AS file_extension
+FROM upload u;`
+                },
+                {
+                    title: "17. Find the students who have uploaded more than one file for the same teacher:",
+                    code: `SELECT s.s_name, t.t_name,
+COUNT(u.u_id) AS uploads_count
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.s_id, t.t_id
+HAVING COUNT(u.u_id) > 1;`
+                },
+                {
+                    title: "18. Show course-wise upload count along with the number of unique students and teachers involved:",
+                    code: `SELECT s.course,
+COUNT(u.u_id) AS total_uploads,
+COUNT(DISTINCT s.s_id) AS unique_students,
+COUNT(DISTINCT t.t_id) AS unique_teachers
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.course;`
+                },
+                {
+                    title: "19. List all teachers who haven't received any uploads from students:",
+                    code: `SELECT t.t_name
+FROM teacher t
+LEFT JOIN upload u ON t.t_id = u.t_id
+WHERE u.u_id IS NULL;`
+                },
+                {
+                    title: "20. Display the list of students who uploaded files to more than one teacher:",
+                    code: `SELECT s.s_name,
+COUNT(DISTINCT u.t_id) AS unique_teachers
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+GROUP BY s.s_id, s.s_name
+HAVING COUNT(DISTINCT u.t_id) > 1;`
+                },
+                {
+                    title: "21. Find the total number of uploads made by each student:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.s_id, s.s_name;`
+                },
+                {
+                    title: "22. List all uploads along with the student and teacher names, ordered by most recent upload date:",
+                    code: `SELECT s.s_name AS student_name,
+t.t_name AS teacher_name,
+u.title, u.file, u.u_date
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+ORDER BY u.u_date DESC;`
+                },
+                {
+                    title: "23. Find the course with the highest number of unique student uploads:",
+                    code: `SELECT s.course, COUNT(DISTINCT u.u_id) AS total_uploads
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+GROUP BY s.course
+ORDER BY total_uploads DESC
+LIMIT 1;`
+                },
+                {
+                    title: "24. Find the teacher(s) who received uploads from the students in the 'BA' course:",
+                    code: `SELECT t.t_name,
+COUNT(u.u_id) AS total_upload_received
+FROM teacher t
+JOIN upload u ON t.t_id = u.t_id
+JOIN student s ON u.s_id = s.s_id
+WHERE s.course = 'BA'
+GROUP BY t.t_id;`
+                },
+                {
+                    title: "25. List students with their course, total uploads, and the name of the teacher they uploaded to the most:",
+                    code: `SELECT s.s_name, s.course,
+COUNT(u.u_id) AS total_uploads,
+(
+    SELECT t2.t_name
+    FROM upload u2
+    JOIN teacher t2 ON u2.t_id = t2.t_id
+    WHERE u2.s_id = s.s_id
+    GROUP BY u2.t_id
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
+) AS top_teacher
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.s_id;`
+                }
+            ];
+
+            function fillAllQueriesSection() {
+                const allQueriesSection = document.getElementById('all');
+                if (!allQueriesSection) {
+                    console.error('Error: "all" section element not found. Cannot populate queries.');
+                    return;
+                }
+                
+                // Keep the prose div which is the first child
+                // Remove all other children (dynamically added queries)
+                while (allQueriesSection.children.length > 1) { 
+                    allQueriesSection.removeChild(allQueriesSection.lastElementChild);
+                }
+
+                allQueriesData.forEach(query => {
+                    const queryDiv = document.createElement('div');
+                    queryDiv.className = 'bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg';
+                    queryDiv.innerHTML = `
+                        <h3 class="font-semibold text-base sm:text-lg mb-2 text-gray-100">${query.title}</h3>
+                        <button class="toggle-query mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">Show Query</button>
+                        <pre class="query-code mt-4 bg-gray-900 p-3 sm:p-4 rounded-md text-xs sm:text-sm text-green-300"><code>${query.code}</code></pre>
+                    `;
+                    allQueriesSection.appendChild(queryDiv);
+                });
+            }
+
+
+            const studentQueriesData = [
+                {
+                    title: "Show a report of student uploads grouped by semester:",
+                    code: `SELECT s.semester,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.semester;`
+                },
+                {
+                    title: "List students whose names start with 'A' and have made at least one upload:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+JOIN upload u ON s.s_id = u.s_id
+WHERE s.s_name LIKE 'A%'
+GROUP BY s.s_id;`
+                },
+                {
+                    title: "Count how many students per course have uploaded files:",
+                    code: `SELECT student.course,
+COUNT(DISTINCT student.s_id) AS students_uploaded
+FROM student
+JOIN upload ON student.s_id = upload.s_id
+GROUP BY student.course;`
+                },
+                {
+                    title: "List upload titles along with semester of the student who uploaded it:",
+                    code: `SELECT u.title, s.semester
+FROM upload u
+INNER JOIN student s ON u.s_id = s.s_id;`
+                },
+                {
+                    title: "All students who uploaded more than one file, including their name, total uploads, and the list of teachers they've uploaded to all grouped by student:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads,
+GROUP_CONCAT(DISTINCT t.t_name SEPARATOR ',') AS uploaded_to_teachers
+FROM student s
+JOIN upload u ON s.s_id = u.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.s_id
+HAVING total_uploads > 1
+ORDER BY total_uploads DESC;`
+                },
+                {
+                    title: "Get names of students and the titles of files they uploaded under teachers from the 'Psychology' department:",
+                    code: `SELECT s.s_name, u.title, t.t_name
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+WHERE t.t_dept = 'Psychology';`
+                },
+                {
+                    title: "Find the students who have uploaded more than one file for the same teacher:",
+                    code: `SELECT s.s_name, t.t_name,
+COUNT(u.u_id) AS uploads_count
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.s_id, t.t_id
+HAVING COUNT(u.u_id) > 1;`
+                },
+                {
+                    title: "Display the list of students who uploaded files to more than one teacher:",
+                    code: `SELECT s.s_name,
+COUNT(DISTINCT u.t_id) AS unique_teachers
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+GROUP BY s.s_id, s.s_name
+HAVING COUNT(DISTINCT u.t_id) > 1;`
+                },
+                {
+                    title: "Find the total number of uploads made by each student:",
+                    code: `SELECT s.s_name,
+COUNT(u.u_id) AS total_uploads
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.s_id, s.s_name;`
+                },
+                {
+                    title: "Find the course with the highest number of unique student uploads:",
+                    code: `SELECT s.course, COUNT(DISTINCT u.u_id) AS total_uploads
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+GROUP BY s.course
+ORDER BY total_uploads DESC
+LIMIT 1;`
+                },
+                {
+                    title: "List students with their course, total uploads, and the name of the teacher they uploaded to the most:",
+                    code: `SELECT s.s_name, s.course,
+COUNT(u.u_id) AS total_uploads,
+(
+    SELECT t2.t_name
+    FROM upload u2
+    JOIN teacher t2 ON u2.t_id = t2.t_id
+    WHERE u2.s_id = s.s_id
+    GROUP BY u2.t_id
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
+) AS top_teacher
+FROM student s
+LEFT JOIN upload u ON s.s_id = u.s_id
+GROUP BY s.s_id;`
+                }
+            ];
+
+            function fillStudentQueriesSection() {
+                const studentQueriesSection = document.getElementById('student');
+                if (!studentQueriesSection) {
+                    console.error('Error: "student" section element not found. Cannot populate queries.');
+                    return;
+                }
+                while (studentQueriesSection.children.length > 1) { 
+                    studentQueriesSection.removeChild(studentQueriesSection.lastElementChild);
+                }
+
+                studentQueriesData.forEach((query, index) => {
+                    const queryDiv = document.createElement('div');
+                    queryDiv.className = 'bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg';
+                    queryDiv.innerHTML = `
+                        <h3 class="font-semibold text-base sm:text-lg mb-2 text-gray-100">${index + 1}. ${query.title}</h3>
+                        <button class="toggle-query mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">Show Query</button>
+                        <pre class="query-code mt-4 bg-gray-900 p-3 sm:p-4 rounded-md text-xs sm:text-sm text-green-300"><code>${query.code}</code></pre>
+                    `;
+                    studentQueriesSection.appendChild(queryDiv);
+                });
+            }
+
+            const teacherQueriesData = [
+                {
+                    title: "Find teachers whose email domains are 'gmail.com' and have received uploads:",
+                    code: `SELECT t.t_name, t.t_email,
+COUNT(u.u_id) AS total_uploads_received
+FROM teacher t
+JOIN upload u ON t.t_id = u.t_id
+WHERE t.t_email LIKE '%@gmail.com'
+GROUP BY t.t_id, t.t_name, t.t_email;`
+                },
+                {
+                    title: "Show the number of uploads each teacher received:",
+                    code: `SELECT teacher.t_name,
+COUNT(upload.u_id) AS uploads_received
+FROM upload
+INNER JOIN teacher ON upload.t_id = teacher.t_id
+GROUP BY teacher.t_id;`
+                },
+                {
+                    title: "List all teachers who have received uploads from students in the 4th semester:",
+                    code: `SELECT teacher.t_name,
+COUNT(upload.u_id) AS total_uploads_received
+FROM upload
+INNER JOIN student ON upload.s_id = student.s_id
+INNER JOIN teacher ON upload.t_id = teacher.t_id
+WHERE student.semester = '4th semester'
+GROUP BY teacher.t_id, teacher.t_name;`
+                },
+                {
+                    title: "For each teacher, list the latest file they received (by upload date):",
+                    code: `SELECT t.t_name, u.file, u.u_date
+FROM upload u
+JOIN teacher t ON u.t_id = t.t_id
+WHERE
+(t.t_id, u.u_date) IN (
+    SELECT t_id, MAX(u_date)
+    FROM upload
+    GROUP BY t_id
+);`
+                },
+                {
+                    title: "Display the teacher and the total number of students they have supervised uploads for:",
+                    code: `SELECT t.t_name,
+COUNT(DISTINCT u.s_id) AS student_supervised
+FROM upload u
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY t.t_id;`
+                },
+                {
+                    title: "List all teachers who haven't received any uploads from students:",
+                    code: `SELECT t.t_name
+FROM teacher t
+LEFT JOIN upload u ON t.t_id = u.t_id
+WHERE u.u_id IS NULL;`
+                },
+                {
+                    title: "Find the teacher(s) who received uploads from the students in the 'BA' course:",
+                    code: `SELECT t.t_name,
+COUNT(u.u_id) AS total_upload_received
+FROM teacher t
+JOIN upload u ON t.t_id = u.t_id
+JOIN student s ON u.s_id = s.s_id
+WHERE s.course = 'BA'
+GROUP BY t.t_id;`
+                }
+            ];
+
+            function fillTeacherQueriesSection() {
+                const teacherQueriesSection = document.getElementById('teacher');
+                if (!teacherQueriesSection) {
+                    console.error('Error: "teacher" section element not found. Cannot populate queries.');
+                    return;
+                }
+                while (teacherQueriesSection.children.length > 1) { 
+                    teacherQueriesSection.removeChild(teacherQueriesSection.lastElementChild);
+                }
+
+                teacherQueriesData.forEach((query, index) => {
+                    const queryDiv = document.createElement('div');
+                    queryDiv.className = 'bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg';
+                    queryDiv.innerHTML = `
+                        <h3 class="font-semibold text-base sm:text-lg mb-2 text-gray-100">${index + 1}. ${query.title}</h3>
+                        <button class="toggle-query mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">Show Query</button>
+                        <pre class="query-code mt-4 bg-gray-900 p-3 sm:p-4 rounded-md text-xs sm:text-sm text-green-300"><code>${query.code}</code></pre>
+                    `;
+                    teacherQueriesSection.appendChild(queryDiv);
+                });
+            }
+
+            const uploadQueriesData = [
+                {
+                    title: "Show the earliest upload entry along with student and teacher names:",
+                    code: `SELECT u.u_id, u.u_date, s.s_name, t.t_name, u.title
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+ORDER BY u.u_date ASC
+LIMIT 1;`
+                },
+                {
+                    title: "Get titles and upload dates for each file uploaded under the 'Economics' department:",
+                    code: `SELECT u.title, u.u_date, t.t_dept
+FROM upload u
+INNER JOIN teacher t ON u.t_id = t.t_id
+WHERE t.t_dept = 'Economics';`
+                },
+                {
+                    title: "List all uploaded file titles with student and teacher names involved:",
+                    code: `SELECT u.title, s.s_name AS student, t.t_name AS teacher
+FROM upload u
+INNER JOIN student s ON u.s_id = s.s_id
+INNER JOIN teacher t ON u.t_id = t.t_id;`
+                },
+                {
+                    title: "Display all uploads with their file extensions extracted:",
+                    code: `SELECT u.title, u.file,
+SUBSTRING_INDEX(u.file, '.', -1) AS file_extension
+FROM upload u;`
+                },
+                {
+                    title: "Show course-wise upload count along with the number of unique students and teachers involved:",
+                    code: `SELECT s.course,
+COUNT(u.u_id) AS total_uploads,
+COUNT(DISTINCT s.s_id) AS unique_students,
+COUNT(DISTINCT t.t_id) AS unique_teachers
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+GROUP BY s.course;`
+                },
+                {
+                    title: "List all uploads along with the student and teacher names, ordered by most recent upload date:",
+                    code: `SELECT s.s_name AS student_name,
+t.t_name AS teacher_name,
+u.title, u.file, u.u_date
+FROM upload u
+JOIN student s ON u.s_id = s.s_id
+JOIN teacher t ON u.t_id = t.t_id
+ORDER BY u.u_date DESC;`
+                }
+            ];
+
+            function fillUploadQueriesSection() {
+                const uploadQueriesSection = document.getElementById('upload');
+                if (!uploadQueriesSection) {
+                    console.error('Error: "upload" section element not found. Cannot populate queries.');
+                    return;
+                }
+                while (uploadQueriesSection.children.length > 1) { 
+                    uploadQueriesSection.removeChild(uploadQueriesSection.lastElementChild);
+                }
+
+                uploadQueriesData.forEach((query, index) => {
+                    const queryDiv = document.createElement('div');
+                    queryDiv.className = 'bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg';
+                    queryDiv.innerHTML = `
+                        <h3 class="font-semibold text-base sm:text-lg mb-2 text-gray-100">${index + 1}. ${query.title}</h3>
+                        <button class="toggle-query mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">Show Query</button>
+                        <pre class="query-code mt-4 bg-gray-900 p-3 sm:p-4 rounded-md text-xs sm:text-sm text-green-300"><code>${query.code}</code></pre>
+                    `;
+                    uploadQueriesSection.appendChild(queryDiv);
+                });
+            }
+
+            const updateOperationsData = [
+                {
+                    title: "Update Operation on student entity:",
+                    code: `UPDATE student
+SET s_name = 'Ankush R'
+WHERE s_id = 104;`
+                },
+                {
+                    title: "Update Operation on teacher entity:",
+                    code: `UPDATE teacher
+SET t_dept = 'Chemistry'
+WHERE t_id = 204;`
+                },
+                {
+                    title: "Update Operation on upload entity:",
+                    code: `UPDATE upload
+SET file = 'new_cs_network.docx'
+WHERE u_id = 1;`
+                }
+            ];
+
+            function fillUpdateOperationsSection() {
+                const updateOperationsSection = document.getElementById('update');
+                if (!updateOperationsSection) {
+                    console.error('Error: "update" section element not found. Cannot populate queries.');
+                    return;
+                }
+                while (updateOperationsSection.children.length > 1) { 
+                    updateOperationsSection.removeChild(updateOperationsSection.lastElementChild);
+                }
+
+                updateOperationsData.forEach((query, index) => {
+                    const queryDiv = document.createElement('div');
+                    queryDiv.className = 'bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg';
+                    queryDiv.innerHTML = `
+                        <h3 class="font-semibold text-base sm:text-lg mb-2 text-gray-100">${index + 1}. ${query.title}</h3>
+                        <button class="toggle-query mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">Show Query</button>
+                        <pre class="query-code mt-4 bg-gray-900 p-3 sm:p-4 rounded-md text-xs sm:text-sm text-green-300"><code>${query.code}</code></pre>
+                    `;
+                    updateOperationsSection.appendChild(queryDiv);
+                });
+            }
+
+            function showSection(id) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                const activeSection = document.getElementById(id);
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                }
+                
+                // Update nav link active state
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href') === `#${id}`) {
+                        link.classList.add('active-nav');
+                    }
+                });
+
+                // Update mobile dropdown
+                if(mobileNav && mobileNav.value !== id) {
+                    mobileNav.value = id;
+                }
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('href').substring(1);
+                    showSection(targetId);
+                });
+            });
+
+            if (mobileNav) { // Check if mobileNav exists before adding event listener
+                mobileNav.addEventListener('change', (e) => {
+                    showSection(e.target.value);
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('toggle-query')) {
+                    const button = e.target;
+                    const queryCodePre = button.nextElementSibling;
+                    const isHidden = queryCodePre.style.display === 'none' || queryCodePre.style.display === '';
+                    
+                    if (isHidden) {
+                        queryCodePre.style.display = 'block';
+                        button.textContent = 'Hide Query';
+                    } else {
+                        queryCodePre.style.display = 'none';
+                        button.textContent = 'Show Query';
+                    }
+                }
+            });
+
+            // No sidebar toggle logic needed in this reverted version.
+
+            // Fill content for all sections initially (hidden by default except active one)
+            fillAllQueriesSection();
+            fillStudentQueriesSection();
+            fillTeacherQueriesSection();
+            fillUploadQueriesSection();
+            fillUpdateOperationsSection();
+
+            // Initial state: show "All Queries" section
+            showSection('all');
+        });
+    </script>
+</body>
+</html>
