@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCA 5th Sem Syllabus</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a clean, modern look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d; /* Very dark background for a deep space feel */
+            color: #e0e0e0; /* Off-white for general text */
+            overflow-x: hidden; /* Prevent horizontal scroll when sidebar is open */
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.1), 0 0 10px rgba(0, 200, 255, 0.1); /* Subtle turquoise glow */
+            border-radius: 0.75rem; /* Rounded corners */
+            background-color: #1c1c1c; /* Darker, almost black for cards */
+            border: 1px solid rgba(0, 255, 200, 0.2); /* Subtle futuristic turquoise border */
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 200, 0.4), 0 0 15px rgba(0, 200, 255, 0.4); /* Enhanced turquoise glow on hover */
+            transform: translateY(-2px);
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 0.5rem;
+            /* Apply futuristic turquoise gradient to text */
+            background: linear-gradient(to right, #00C9FF, #92FE9D); /* Turquoise gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback for browsers not supporting text-fill-color */
+            font-weight: 700; /* Bolder font for headings */
+            text-shadow: 0 0 8px rgba(0, 255, 200, 0.5); /* Subtle turquoise glow for headings */
+        }
+        .unit-title {
+            color: #00F0C8; /* Bright turquoise for unit titles */
+            font-weight: 600;
+            /* Reverted: Removed flex properties to prevent text wrapping issues */
+        }
+        .list-dot {
+            list-style-type: disc;
+            margin-left: 1.5rem; /* Indent list items */
+            color: #ffffff; /* Ensure list text is pure white */
+        }
+        /* General text adjustments for pure white */
+        .card p, .card ul li, .card h4, .card h3 {
+            color: #ffffff; /* Pure white for all main text within cards */
+        }
+        .card .text-gray-600 {
+            color: #bbbbbb; /* Slightly less bright white for secondary text (e.g., evaluation notes) */
+        }
+
+        /* Adjust header text color to complement dark background */
+        header .main-title-gradient {
+            background: linear-gradient(to right, #00C9FF, #92FE9D); /* Turquoise gradient for main title */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 200, 0.8); /* Stronger turquoise glow for main title */
+        }
+        header .text-gray-400 {
+            color: #888888; /* Slightly darker for the sub-title */
+            text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
+        }
+        footer .text-gray-600 {
+            color: #888888; /* Matching the subtitle color */
+        }
+
+        /* Sidebar specific styles */
+        .sidebar {
+            height: 100%;
+            width: 0; /* Initially hidden */
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            background-color: #212121; /* Dark background for sidebar */
+            overflow-x: hidden;
+            transition: 0.5s; /* Smooth slide transition */
+            padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0, 255, 200, 0.3); /* Turquoise shadow */
+            border-right: 1px solid rgba(0, 255, 200, 0.2); /* Turquoise border */
+        }
+
+        .sidebar.open {
+            width: 250px; /* Default width when open */
+        }
+
+        .sidebar a {
+            padding: 15px 25px 15px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #00E4B7; /* Medium Turquoise for sidebar links */
+            display: block;
+            transition: 0.3s;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+        }
+
+        .sidebar a:hover {
+            color: #ffffff;
+            background-color: rgba(0, 255, 200, 0.1); /* Turquoise hover background */
+            text-shadow: 0 0 5px rgba(0, 255, 200, 0.5);
+        }
+
+        /* Main content does NOT shift with sidebar opening, it stays put (overlay) */
+        #main-content {
+            /* No margin-left transition needed as it doesn't move */
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+            color: #00E4B7; /* Medium Turquoise for menu icon */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101; /* Ensure icon is above other content */
+            transition: color 0.3s ease;
+        }
+
+        .menu-icon:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(0, 255, 200, 0.5); /* Turquoise glow on hover */
+        }
+
+        /* Responsive adjustments for a single column layout on all screens */
+        .grid-cols-1 {
+            grid-template-columns: 1fr !important; /* Force single column */
+        }
+
+        @media (max-width: 768px) {
+            .sidebar.open {
+                width: 70%; /* Wider on smaller screens to be more usable */
+            }
+            .menu-icon {
+                font-size: 24px; /* Smaller icon on small screens */
+                top: 15px;
+                left: 15px;
+            }
+            .container {
+                padding: 1rem; /* Reduce padding on smaller screens */
+            }
+            header h1 {
+                font-size: 2.5rem; /* Adjust header font size */
+            }
+            header p {
+                font-size: 1.25rem;
+            }
+            .section-title {
+                font-size: 1.5rem; /* Adjust section title font size */
+            }
+            .unit-title {
+                font-size: 1rem; /* Adjust unit title font size */
+            }
+            .card {
+                padding: 1.25rem; /* Adjust card padding */
+            }
+            .list-dot {
+                margin-left: 1rem; /* Adjust list indent */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar.open {
+                width: 85%; /* Even wider on very small screens */
+            }
+            .menu-icon {
+                font-size: 20px;
+                top: 10px;
+                left: 10px;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            .section-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased leading-normal tracking-wide">
+
+    <!-- Sidebar -->
+    <div id="mySidebar" class="sidebar">
+        <a href="#graphics-section">Computer Graphics</a>
+        <a href="#operations-research-section">Operations Research</a>
+        <a href="#web-programming-section">Web Programming</a>
+        <a href="#cloud-computing-section">Cloud Computing</a>
+    </div>
+
+    <!-- Menu Icon to open sidebar -->
+    <div class="menu-icon" onclick="toggleNav()">&#9776;</div>
+
+    <!-- Main content container -->
+    <div id="main-content" class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12 py-8 card">
+            <h1 class="text-4xl md:text-5xl font-extrabold main-title-gradient mb-2">BCA 5th Semester Syllabus</h1>
+        </header>
+
+        <main class="grid grid-cols-1 gap-8">
+            <!-- Course: Introduction to Computer Graphics -->
+            <section id="graphics-section" class="p-6 card">
+                <h2 class="text-2xl font-semibold mb-4 section-title">Course Code: 5.1 - Introduction to Computer Graphics</h2>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Objective:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Discuss different graphics packages, demonstrate functionality of display devices.</li>
+                    <li>Explain all aspects of computer graphics including hardware, software and applications.</li>
+                    <li>Illustrate how an animation is created.</li>
+                    <li>Write program functions in C to implement different graphics primitives.</li>
+                </ul>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Prerequisites:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Basic knowledge of display devices.</li>
+                </ul>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Develop graphical algorithm to design different graphical pattern.</li>
+                    <li>Design simple graphical pattern using C.</li>
+                    <li>Resolve programming problem using graphics packages.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.1) - Total Marks: 100</h4>
+                <p class="text-sm text-gray-600 mb-4">(In semester evaluation 40 & End semester evaluation 60)</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I: Introduction (Marks: 15)</h5>
+                <p class="text-gray-700 mb-2">Overview of graphics system: Video display devices, input devices, hard copy devices, graphics software, color look up tables, Pointing and positioning devices (cursor, light pen, digitizing tablet, the mouse, track balls).</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II: Output primitives (Marks: 15)</h5>
+                <p class="text-gray-700 mb-2">Points and lines, line drawing algorithms, circle and ellipse generating algorithms.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit III: Geometrical transformations (Marks: 15)</h5>
+                <p class="text-gray-700 mb-2">Basic transformations, translations, rotation and scaling, viewing Clipping Operations: Point clipping, line clipping, Text clipping.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit IV: Animation and Multimedia (Marks: 15)</h5>
+                <p class="text-gray-700 mb-4">Introduction to computer animation and virtual reality. Introduction to multimedia and its components, Basic concept of Image, Different multimedia components and file formats, Animation components, morphing and application, Graphics tools, image editing tools.</p>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Hearn D and Baker M.P.,"Computer Graphics", PHI 2/e, 2011</li>
+                    <li>Godse, A. P. "Computer Graphics And Multimedia (English)", Technical Publication 1st Edition,2011</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Chopra R," Computer Graphics", Kindle 2nd Edition,2010</li>
+                    <li>Harrington S,"Computer Graphics", Indian Edition, 2014</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-B Practical (PR:5.1) - Total marks:50</h4>
+                <p class="text-sm text-gray-600 mb-4">(In semester evaluation 20 & End semester evaluation 30)</p>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Implement of the line, circle drawing algorithm using "C".</li>
+                    <li>Implement of polygon and ellipse algorithms using "C".</li>
+                    <li>Implementation of clipping algorithm.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Functionality of Display devices.</li>
+                    <li>Graphical algorithms.</li>
+                    <li>3-D and 2-D graphical representation.</li>
+                </ul>
+            </section>
+
+            <!-- Course: Operations Research -->
+            <section id="operations-research-section" class="p-6 card">
+                <h2 class="text-2xl font-semibold mb-4 section-title">Course Code: 5.2 - Operations Research</h2>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Objective:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Discuss definition, scope, objectives, phases, models & limitations of operations research.</li>
+                    <li>Analyze managerial problems in industry so that they are able to use resources (capitals, materials, staffing, and machines) more effectively.</li>
+                    <li>Explain graphical method, simplex method and duality.</li>
+                    <li>Solve transportation problem.</li>
+                    <li>Describe how to write case study report.</li>
+                </ul>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Discuss the importance and value of Operations Research and mathematical modeling involving practical problems in industry.</li>
+                    <li>Model mathematically real life managerial decision making problems.</li>
+                    <li>Use computer tools to solve a mathematical model for a practical problem.</li>
+                    <li>Construct case study report.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.2) - Total Marks: 100</h4>
+                <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I Model Formulation (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction, Structure and assumption of an Linear Programming problem (LP), General mathematical model of linear programming problem.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II Graphical Solution Method (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction, Definitions, graphical solution method of an LP problem, multiple optimal solution, unbounded solution, Infeasible solution.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit III Simplex Method (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction, standard form of LP problem, simplex algorithm (maximization case), Simple Algorithm (Minimization case), multiple Optimal solution, Unbounded Solution.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit IV Duality (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction, Formulation of dual linear problem, standard results on duality, advantage of duality.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit V Transportation Problem (Marks: 12)</h5>
+                <p class="text-gray-700 mb-4">Introduction, Loops in transportation table and their properties, transportation method, Linear programming formulation of the transportation problem.</p>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Sharma K. J., "Operation Research Theory and Application", 3rd Edition, MacMillan India Ltd.2014.</li>
+                    <li>Havinal V. "Introduction to Operations Research", 1st Edition, New Age International Publishers.2012</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Bronson R., Operation Research; 2nd Edition, McGraw Hill.1997.</li>
+                    <li>Sharma K.J., " Operation Research: Problems and Solutions", 3rd Edition, Macmillan Publishers, 2016.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-B Practical (PR:5.2) - Total marks:50</h4>
+                <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Computer application of Operations Research methods.</li>
+                    <li>Case studies.</li>
+                </ul>
+            </section>
+
+            <!-- Course: Internet & Web Programming Technology -->
+            <section id="web-programming-section" class="p-6 card">
+                <h2 class="text-2xl font-semibold mb-4 section-title">Course Code: 5.3 - Internet & Web Programming Technology</h2>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Objective:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Design a webpage using HTML and CSS.</li>
+                    <li>Make an interactive webpage using JavaScript.</li>
+                    <li>Use Server side scripting language to make a dynamic webpage.</li>
+                    </ul>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Design dynamic and interactive web pages by embedding Java Script code in HTML and using Java Script to validate user input.</li>
+                    <li>Apply CSS in WebPages.</li>
+                    <li>Recognize the HTML and XML DOM.</li>
+                    <li>Create website using Server Side Scripting language.</li>
+                    <li>Apply AJAX in WebPages.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.3) - Total Marks: 100</h4>
+                <p class="text-sm text-gray-600 mb-4">(In semester evaluation 40 & End semester evaluation 60)</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 1: Introduction to Internet (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">History of Internet, Structure of Internet (include client server architecture), Internet Terminologies (www, URL, search engine, bandwidth, browser, cookies, domain name service, IP address, website and its components, telnet etc.), protocols, types of protocols(http, https, ftp).</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 2: DOM & XML (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction to Document Object Model (DOM), hierarchy of objects in DOM. Introduction to XML. Applications of XML.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 3: HTML & CSS (Marks:12)</h5>
+                <p class="text-gray-700 mb-2">Introduction to HTML. Webpage Elements, attributes, heading, paragraphs, images, tables, lists, forms. Basic of CSS, Add style to document, Creating Style sheet rules, Style sheet properties, Font, Text, List, Color and background color, Box, Display properties.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 4: Introduction to Client-Side Scripting language (Marks: 12)</h5>
+                <p class="text-gray-700 mb-2">Introduction to Client side scripting language, Javascript, Advantage of Javascript, Javascript Syntax, Datatype, Variable, Array, Operator and Expression, Loop, Function, Dialog box, event handling using javascript, form validation. Introduction to Ajax and VB Script.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 5: Introduction to Server-Side Scripting language (Marks: 12)</h5>
+                <p class="text-gray-700 mb-4">Introduction to Server side scripting language, Introduction to ASP, JSP, PHP. Development of WebPages using javascript and any one server side scripting language.</p>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Hahn, H, "The Internet Complete Reference", Mcgraw-Hill Osborne Media, 2nd Edition, 2002.</li>
+                    <li>Roy U.K,"Web Technologies", Oxford University Press, 1st edition, 2010.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Robin N, "Learning PHP, MySQL & JavaScript with jQuery, CSS & HTML5", O'Reilly,2014,4th Edition.</li>
+                    <li>Phillip H,"JSP 2.0: The Complete Reference", Mcgraw Hill.2nd Edition, 2003.</li>
+                    <li>Bill E, Scott H, Farhan M, "Professional ASP.NET 2.0",4th Edition, 2005.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Part B(Practical) PR:5.3) - Total Marks: 50</h4>
+                <p class="text-sm text-gray-600 mb-4">(In semester evaluation 20 & End semester evaluation 30)</p>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Design dynamic and interactive web pages to validate user input.</li>
+                    <li>Apply CSS, Ajax in WebPages.</li>
+                    <li>Apply PHP in a webpage.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Emphasis should be given on designing web pages using JavaScript and any one server side scripting language.</li>
+                </ul>
+            </section>
+
+            <!-- Course: Cloud Computing -->
+            <section id="cloud-computing-section" class="p-6 card">
+                <h2 class="text-2xl font-semibold mb-4 section-title">Course Code: TH:5.4 - Cloud Computing</h2>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Objective:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>To introduce the broad perceptive of cloud architecture and model.</li>
+                    <li>To understand the concept of Virtualization.</li>
+                    <li>To be familiar with the lead players in cloud.</li>
+                    <li>To understand the features of cloud simulator.</li>
+                    <li>To apply different cloud programming model as per need.</li>
+                    <li>To be able to set up a private cloud.</li>
+                    <li>To understand the design of cloud Services.</li>
+                    <li>To learn to design the trusted cloud Computing system.</li>
+                </ul>
+
+                <h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Compare the strengths and limitations of cloud computing.</li>
+                    <li>Identify the architecture, infrastructure and delivery models of cloud computing.</li>
+                    <li>Apply suitable virtualization concept.</li>
+                    <li>Choose the appropriate cloud player.</li>
+                    <li>Choose the appropriate Programming Models and approach.</li>
+                    <li>Address the core issues of cloud computing such as security, privacy and interoperability.</li>
+                    <li>Design Cloud Services.</li>
+                    <li>Set a private cloud.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.4) - Total Marks: 100</h4>
+                <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I: Cloud Architecture And Model (Marks:12)</h5>
+                <p class="text-gray-700 mb-2">Technologies for Network-Based System - System Models for Distributed and Cloud Computing - NIST Cloud Computing Reference Architecture. Cloud Models:- Characteristics - Cloud Services - Cloud models (IaaS, PaaS, SaaS) - Public vs Private Cloud-Cloud Solutions - Cloud ecosystem - Service management - Computing on demand.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II: Virtualization (Marks:12)</h5>
+                <p class="text-gray-700 mb-2">Basics of Virtualization - Types of Virtualization - Implementation Levels of Virtualization - Virtualization Structures - Tools and Mechanisms - Virtualization of CPU, Memory, I/O Devices - Virtual Clusters and Resource management - Virtualization for Data-center Automation.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit III: Cloud Infrastructure (Marks:12)</h5>
+                <p class="text-gray-700 mb-2">Architectural Design of Compute and Storage Clouds - Layered Cloud Architecture Development - Design Challenges - Inter Cloud Resource Management - Resource Provisioning and Platform Deployment - Global Exchange of Cloud Resources.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit IV: Programming Model (Marks:12)</h5>
+                <p class="text-gray-700 mb-2">Parallel and Distributed Programming Paradigms - MapReduce, Twister and Iterative MapReduce - Hadoop Library from Apache - Mapping Applications - Programming Support - Google App Engine, Amazon AWS - Cloud Software Environments -Eucalyptus, Open Nebula, OpenStack, Aneka, CloudSim.</p>
+
+                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit V: Security In The Cloud (Marks:12)</h5>
+                <p class="text-gray-700 mb-4">Security Overview - Cloud Security Challenges and Risks - Software-as-a-Service Security - Security Governance - Risk Management - Security Monitoring - Security Architecture Design - Data Security - Application Security - Virtual Machine Security - Identity Management and Access Control - Autonomic Security.</p>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Kai Hwang, Geoffrey C Fox, Jack G Dongarra, "Distributed and Cloud Computing, From Parallel Processing to the Internet of Things", Morgan Kaufmann Publishers, 2012.</li>
+                    <li>John W.Rittinghouse and James F.Ransome, "Cloud Computing: Implementation, Management, and Security", CRC Press, 2010.</li>
+                </ul>
+
+                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Toby Velte, Anthony Velte, Robert Elsenpeter, "Cloud Computing, A Practical Approach", TMH, 2009.</li>
+                    <li>Kumar Saurabh, "Cloud Computing - insights into New-Era Infrastructure", Wiley India, 2011.</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 py-6 card text-gray-600">
+            <p>&copy; 2025 BCA 5th Sem Syllabus.</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleNav() {
+            const sidebar = document.getElementById("mySidebar");
+            // Check if sidebar is open or closed, then toggle
+            if (sidebar.classList.contains("open")) {
+                sidebar.classList.remove("open");
+            } else {
+                sidebar.classList.add("open");
+            }
+        }
+
+        // Smooth scroll for anchor links and close sidebar
+        document.querySelectorAll('.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    toggleNav(); // Closes sidebar after clicking a link
+                }
+            });
+        });
+
+        // Add a click listener to the main content area to close the sidebar if open
+        document.getElementById("main-content").addEventListener('click', function(event) {
+            const sidebar = document.getElementById("mySidebar");
+            const menuIcon = document.querySelector('.menu-icon');
+
+            // If sidebar is open and the click is outside the sidebar AND not on the menu icon
+            if (sidebar.classList.contains("open") && !sidebar.contains(event.target) && !menuIcon.contains(event.target)) {
+                toggleNav();
+            }
+        });
+    </script>
+</body>
+</html>
