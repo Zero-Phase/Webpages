@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom font for a clean, modern look */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Expletus+Sans:wght@400;500;600;700&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Expletus Sans', sans-serif; /* Changed font to Expletus Sans */
             background-color: #0d0d0d; /* Very dark background for a deep space feel */
             color: #e0e0e0; /* Off-white for general text */
             overflow-x: hidden; /* Prevent horizontal scroll when sidebar is open */
@@ -22,14 +22,14 @@
             box-shadow: 0 0 15px rgba(0, 255, 200, 0.1), 0 0 10px rgba(0, 200, 255, 0.1); /* Subtle turquoise glow */
             border-radius: 0.75rem; /* Rounded corners */
             background-color: #1c1c1c; /* Darker, almost black for cards */
-            border: 1px solid rgba(0, 255, 200, 0.2); /* Subtle futuristic turquoise border */
+            border: 1px solid rgba(0, 255, 200, 0.2); /* Subtle futuristic border */
             transition: all 0.3s ease-in-out;
         }
         .card:hover {
             box-shadow: 0 0 25px rgba(0, 255, 200, 0.4), 0 0 15px rgba(0, 200, 255, 0.4); /* Enhanced turquoise glow on hover */
             transform: translateY(-2px);
         }
-        .section-title {
+        .section-title, .part-title-gradient { /* Applied theme to both section and part titles */
             position: relative;
             padding-bottom: 0.5rem;
             /* Apply futuristic turquoise gradient to text */
@@ -44,7 +44,6 @@
         .unit-title {
             color: #00F0C8; /* Bright turquoise for unit titles */
             font-weight: 600;
-            /* Reverted: Removed flex properties to prevent text wrapping issues */
         }
         .list-dot {
             list-style-type: disc;
@@ -81,30 +80,43 @@
             height: 100%;
             width: 0; /* Initially hidden */
             position: fixed;
-            z-index: 100;
+            z-index: 120; /* Increased z-index to be on top of fixed header */
             top: 0;
             left: 0;
             background-color: #212121; /* Dark background for sidebar */
             overflow-x: hidden;
-            transition: 0.5s; /* Smooth slide transition */
-            padding-top: 60px;
+            padding-top: 80px; /* Adjusted padding-top to align content below the new 80px sidebar-header */
             box-shadow: 2px 0 10px rgba(0, 255, 200, 0.3); /* Turquoise shadow */
             border-right: 1px solid rgba(0, 255, 200, 0.2); /* Turquoise border */
+            transition: width 0.3s ease-in-out; /* Added transition for smooth slide */
         }
 
         .sidebar.open {
-            width: 250px; /* Default width when open */
+            width: 250px; /* Default width when open for larger screens */
         }
 
         .sidebar a {
-            padding: 15px 25px 15px 32px;
+            padding: 15px 25px 15px 1rem; /* Adjusted left padding to 1rem for alignment */
             text-decoration: none;
             font-size: 18px;
             color: #00E4B7; /* Medium Turquoise for sidebar links */
             display: block;
-            transition: 0.3s;
+            transition: color 0.3s, background-color 0.3s; /* Transition retained for individual links, without layout changes */
             border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+            white-space: nowrap; /* Keep text on a single line */
+            overflow: hidden; /* Hide overflowing content */
+            text-overflow: ellipsis; /* Add ellipsis for hidden overflow */
         }
+
+        /* Highlight style for active sidebar link */
+        .sidebar a.active {
+            background-color: rgba(0, 255, 200, 0.2); /* Slightly darker turquoise background */
+            color: #ffffff; /* White text for active link */
+            font-weight: 600; /* Make text bolder */
+            box-shadow: inset 3px 0 0 #00F0C8; /* Left border highlight */
+            text-shadow: 0 0 5px rgba(0, 255, 200, 0.7); /* Subtle glow */
+        }
+
 
         .sidebar a:hover {
             color: #ffffff;
@@ -112,23 +124,122 @@
             text-shadow: 0 0 5px rgba(0, 255, 200, 0.5);
         }
 
-        /* Main content does NOT shift with sidebar opening, it stays put (overlay) */
-        #main-content {
-            /* No margin-left transition needed as it doesn't move */
+        /* Style for the sidebar header with "Contents" and the close button */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between; /* Pushes content and X to edges */
+            align-items: center; /* Vertically aligns items */
+            padding: 0 5px 0 1rem; /* Adjusted padding: 0 top/bottom, 5px right, 1rem left */
+            height: 80px; /* Set height to match main header for border alignment */
+            position: absolute; /* Take it out of flow for proper positioning */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #212121; /* Match sidebar background */
+            box-sizing: border-box; /* Include padding and border in width/height */
+            border-bottom: 1px solid rgba(0, 255, 200, 0.2); /* Separator */
         }
 
-        .menu-icon {
-            font-size: 30px;
+        .sidebar-header span { /* Target the "Contents" text specifically */
+            /* Apply futuristic turquoise gradient to text */
+            background: linear-gradient(to right, #00C9FF, #92FE9D); /* Turquoise gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback for browsers not supporting text-fill-color */
+            font-weight: 700; /* Bolder font for heading */
+            text-shadow: 0 0 8px rgba(0, 255, 200, 0.5); /* Subtle turquoise glow for heading */
+            font-size: 1.25rem; /* Larger font size for the title */
+            white-space: nowrap; /* Keep text on one line */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Add ellipsis if it overflows */
+            line-height: 1.2; /* Adjust line height for better single-line display */
+            flex-grow: 1; /* Allow the span to grow and push the X button to the right */
+        }
+
+        .sidebar-header .closebtn {
+            position: static; /* Reset absolute positioning for flex container */
+            font-size: 24px; /* Smaller 'x' to fit better with text */
+            color: #00E4B7; /* Matching sidebar link color */
+            text-decoration: none;
+            transition: 0.3s; /* Transition retained for the close button */
+            line-height: 1; /* Adjust line height for better vertical alignment of 'x' */
             cursor: pointer;
-            color: #00E4B7; /* Medium Turquoise for menu icon */
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 101; /* Ensure icon is above other content */
-            transition: color 0.3s ease;
+            padding: 0; /* Remove closebtn specific padding here as parent handles it */
+            margin-left: 10px; /* Small space between text and 'x' */
+            font-weight: 900; /* Made the X bolder */
         }
 
-        .menu-icon:hover {
+        .sidebar-header .closebtn:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(0, 255, 200, 0.5);
+        }
+
+        /* Styles for the transparent overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0); /* Start fully transparent */
+            z-index: 115; /* Between main header and sidebar */
+            display: none; /* Hidden by default */
+            transition: background-color 0.3s ease-in-out; /* Fade effect */
+        }
+
+        .sidebar-overlay.active {
+            display: block; /* Show when active */
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black when active */
+        }
+
+
+        /* Adjust main content padding-top to compensate for fixed header */
+        #main-content {
+            padding-top: 100px; /* Adjust based on fixed-header height (80px + some buffer) */
+        }
+
+        /* Specific style for the main fixed header */
+        .main-fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 110; /* Fixed header is below sidebar when sidebar is open */
+            background-color: #1c1c1c; /* Darker, almost black */
+            box-shadow: 0 5px 15px rgba(0, 255, 200, 0.2); /* Only bottom shadow */
+            border-radius: 0; /* Remove rounded corners for full width top */
+            border: none; /* Remove all original card borders */
+            border-bottom: 1px solid rgba(0, 255, 200, 0.2); /* Only bottom border */
+
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Vertically center items */
+            padding: 0.5rem 1rem; /* Adjust padding as needed for height */
+            height: 80px; /* Fixed height for the header */
+        }
+
+        /* Adjust h1 inside main-fixed-header */
+        .main-fixed-header h1 {
+            margin-bottom: 0 !important; /* Remove bottom margin if present */
+            flex-grow: 1; /* Allow title to take available space */
+            text-align: center; /* Center the title within the header */
+            /* Default large font for desktop */
+            font-size: 3.5rem; /* Equivalent to text-5xl on desktop for larger screens */
+        }
+
+        /* Adjust menu icon positioning within the fixed header */
+        .main-fixed-header .menu-icon {
+            position: relative; /* Make it relative to the flex container */
+            top: auto; /* Remove fixed top */
+            left: auto; /* Remove fixed left */
+            margin-right: 1rem; /* Space between icon and title */
+            font-size: 30px; /* Keep original size */
+            color: #00E4B7; /* Ensure color is retained */
+            cursor: pointer;
+            z-index: auto; /* Z-index is controlled by parent fixed header */
+        }
+
+        .main-fixed-header .menu-icon:hover {
             color: #ffffff;
             text-shadow: 0 0 8px rgba(0, 255, 200, 0.5); /* Turquoise glow on hover */
         }
@@ -140,18 +251,17 @@
 
         @media (max-width: 768px) {
             .sidebar.open {
-                width: 70%; /* Wider on smaller screens to be more usable */
+                width: 50%; /* Adjusted width for medium screens */
             }
             .menu-icon {
                 font-size: 24px; /* Smaller icon on small screens */
-                top: 15px;
-                left: 15px;
             }
             .container {
                 padding: 1rem; /* Reduce padding on smaller screens */
             }
-            header h1 {
-                font-size: 2.5rem; /* Adjust header font size */
+            /* Adjust header font size for medium screens */
+            .main-fixed-header h1 {
+                font-size: 2.5rem; /* Adjust header font size for md screens */
             }
             header p {
                 font-size: 1.25rem;
@@ -168,19 +278,27 @@
             .list-dot {
                 margin-left: 1rem; /* Adjust list indent */
             }
+             .main-fixed-header h1 {
+                padding-right: 0; /* Remove padding on mobile if icon is small or absent */
+                text-align: center; /* Keep centered */
+            }
         }
 
         @media (max-width: 480px) {
             .sidebar.open {
-                width: 85%; /* Even wider on very small screens */
+                width: 50%; /* Adjusted width for very small screens */
+            }
+            /* Adjust header font size for small screens */
+            .main-fixed-header h1 {
+                font-size: 1.5rem; /* Even smaller font size for very small screens */
+                white-space: nowrap; /* Prevent wrapping for the title */
+                overflow: hidden;
+                text-overflow: ellipsis; /* Add ellipsis if it still overflows */
+                padding-left: 0.5rem; /* Add a little padding to the left */
+                padding-right: 0.5rem; /* Add a little padding to the right */
             }
             .menu-icon {
                 font-size: 20px;
-                top: 10px;
-                left: 10px;
-            }
-            header h1 {
-                font-size: 2rem;
             }
             header p {
                 font-size: 1rem;
@@ -188,28 +306,42 @@
             .section-title {
                 font-size: 1.25rem;
             }
+            .sidebar-header span {
+                font-size: 1rem; /* Smaller font for "Contents" on very small screens */
+            }
         }
     </style>
 </head>
 <body class="antialiased leading-normal tracking-wide">
 
+    <!-- Fixed Header Container -->
+    <header id="mainFixedHeader" class="main-fixed-header">
+        <!-- Menu Icon on the left, to OPEN the sidebar -->
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+        <!-- Title in the center, takes remaining space -->
+        <h1 class="font-extrabold main-title-gradient">BCA 5th Semester Syllabus</h1>
+        <!-- Placeholder for symmetry on the right -->
+        <div></div>
+    </header>
+
     <!-- Sidebar -->
     <div id="mySidebar" class="sidebar">
+        <!-- Header for the sidebar with "Contents" and the close button -->
+        <div class="sidebar-header">
+            <span>Contents</span>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        </div>
         <a href="#graphics-section">Computer Graphics</a>
         <a href="#operations-research-section">Operations Research</a>
         <a href="#web-programming-section">Web Programming</a>
         <a href="#cloud-computing-section">Cloud Computing</a>
     </div>
 
-    <!-- Menu Icon to open sidebar -->
-    <div class="menu-icon" onclick="toggleNav()">&#9776;</div>
+    <!-- Transparent overlay to catch clicks outside sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeNav()"></div>
 
     <!-- Main content container -->
     <div id="main-content" class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-12 py-8 card">
-            <h1 class="text-4xl md:text-5xl font-extrabold main-title-gradient mb-2">BCA 5th Semester Syllabus</h1>
-        </header>
-
         <main class="grid grid-cols-1 gap-8">
             <!-- Course: Introduction to Computer Graphics -->
             <section id="graphics-section" class="p-6 card">
@@ -223,46 +355,46 @@
                     <li>Write program functions in C to implement different graphics primitives.</li>
                 </ul>
 
-                <h3 class="text-xl font-medium mb-2 unit-title">Prerequisites:</h3>
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Prerequisites:</h3>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Basic knowledge of display devices.</li>
                 </ul>
 
-                <h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Develop graphical algorithm to design different graphical pattern.</li>
                     <li>Design simple graphical pattern using C.</li>
                     <li>Resolve programming problem using graphics packages.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.1) - Total Marks: 100</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-A Theory (TH:5.1) - Total Marks: 100</h4>
                 <p class="text-sm text-gray-600 mb-4">(In semester evaluation 40 & End semester evaluation 60)</p>
 
-                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I: Introduction (Marks: 15)</h5>
+                <h5 class="text-base font-semibold mb-1 unit-title">Unit I: Introduction (Marks: 15)</h5>
                 <p class="text-gray-700 mb-2">Overview of graphics system: Video display devices, input devices, hard copy devices, graphics software, color look up tables, Pointing and positioning devices (cursor, light pen, digitizing tablet, the mouse, track balls).</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II: Output primitives (Marks: 15)</h5>
                 <p class="text-gray-700 mb-2">Points and lines, line drawing algorithms, circle and ellipse generating algorithms.</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit III: Geometrical transformations (Marks: 15)</h5>
-                <p class="text-gray-700 mb-2">Basic transformations, translations, rotation and scaling, viewing Clipping Operations: Point clipping, line clipping, Text clipping.</p>
+                <p class="text-700 mb-2">Basic transformations, translations, rotation and scaling, viewing Clipping Operations: Point clipping, line clipping, Text clipping.</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit IV: Animation and Multimedia (Marks: 15)</h5>
                 <p class="text-gray-700 mb-4">Introduction to computer animation and virtual reality. Introduction to multimedia and its components, Basic concept of Image, Different multimedia components and file formats, Animation components, morphing and application, Graphics tools, image editing tools.</p>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Hearn D and Baker M.P.,"Computer Graphics", PHI 2/e, 2011</li>
                     <li>Godse, A. P. "Computer Graphics And Multimedia (English)", Technical Publication 1st Edition,2011</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Chopra R," Computer Graphics", Kindle 2nd Edition,2010</li>
                     <li>Harrington S,"Computer Graphics", Indian Edition, 2014</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-B Practical (PR:5.1) - Total marks:50</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-B Practical (PR:5.1) - Total marks:50</h4>
                 <p class="text-sm text-gray-600 mb-4">(In semester evaluation 20 & End semester evaluation 30)</p>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Implement of the line, circle drawing algorithm using "C".</li>
@@ -270,7 +402,7 @@
                     <li>Implementation of clipping algorithm.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Functionality of Display devices.</li>
                     <li>Graphical algorithms.</li>
@@ -291,7 +423,12 @@
                     <li>Describe how to write case study report.</li>
                 </ul>
 
-                <h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Prerequisites:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>Basic knowledge of display devices.</li>
+                </ul>
+
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Learning outcome:</h3>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Discuss the importance and value of Operations Research and mathematical modeling involving practical problems in industry.</li>
                     <li>Model mathematically real life managerial decision making problems.</li>
@@ -299,10 +436,10 @@
                     <li>Construct case study report.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.2) - Total Marks: 100</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-A Theory (TH:5.2) - Total Marks: 100</h4>
                 <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
 
-                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I Model Formulation (Marks: 12)</h5>
+                <h5 class="text-base font-semibold mb-1 unit-title">Unit I Model Formulation (Marks: 12)</h5>
                 <p class="text-gray-700 mb-2">Introduction, Structure and assumption of an Linear Programming problem (LP), General mathematical model of linear programming problem.</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II Graphical Solution Method (Marks: 12)</h5>
@@ -317,19 +454,19 @@
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit V Transportation Problem (Marks: 12)</h5>
                 <p class="text-gray-700 mb-4">Introduction, Loops in transportation table and their properties, transportation method, Linear programming formulation of the transportation problem.</p>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Sharma K. J., "Operation Research Theory and Application", 3rd Edition, MacMillan India Ltd.2014.</li>
                     <li>Havinal V. "Introduction to Operations Research", 1st Edition, New Age International Publishers.2012</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Bronson R., Operation Research; 2nd Edition, McGraw Hill.1997.</li>
                     <li>Sharma K.J., " Operation Research: Problems and Solutions", 3rd Edition, Macmillan Publishers, 2016.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-B Practical (PR:5.2) - Total marks:50</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-B Practical (PR:5.2) - Total marks:50</h4>
                 <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Computer application of Operations Research methods.</li>
@@ -348,7 +485,7 @@
                     <li>Use Server side scripting language to make a dynamic webpage.</li>
                     </ul>
 
-                <h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Design dynamic and interactive web pages by embedding Java Script code in HTML and using Java Script to validate user input.</li>
                     <li>Apply CSS in WebPages.</li>
@@ -357,10 +494,10 @@
                     <li>Apply AJAX in WebPages.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.3) - Total Marks: 100</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-A Theory (TH:5.3) - Total Marks: 100</h4>
                 <p class="text-sm text-gray-600 mb-4">(In semester evaluation 40 & End semester evaluation 60)</p>
 
-                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 1: Introduction to Internet (Marks: 12)</h5>
+                <h5 class="text-base font-semibold mb-1 unit-title">Unit 1: Introduction to Internet (Marks: 12)</h5>
                 <p class="text-gray-700 mb-2">History of Internet, Structure of Internet (include client server architecture), Internet Terminologies (www, URL, search engine, bandwidth, browser, cookies, domain name service, IP address, website and its components, telnet etc.), protocols, types of protocols(http, https, ftp).</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 2: DOM & XML (Marks: 12)</h5>
@@ -375,20 +512,20 @@
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit 5: Introduction to Server-Side Scripting language (Marks: 12)</h5>
                 <p class="text-gray-700 mb-4">Introduction to Server side scripting language, Introduction to ASP, JSP, PHP. Development of WebPages using javascript and any one server side scripting language.</p>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Hahn, H, "The Internet Complete Reference", Mcgraw-Hill Osborne Media, 2nd Edition, 2002.</li>
                     <li>Roy U.K,"Web Technologies", Oxford University Press, 1st edition, 2010.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Robin N, "Learning PHP, MySQL & JavaScript with jQuery, CSS & HTML5", O'Reilly,2014,4th Edition.</li>
                     <li>Phillip H,"JSP 2.0: The Complete Reference", Mcgraw Hill.2nd Edition, 2003.</li>
                     <li>Bill E, Scott H, Farhan M, "Professional ASP.NET 2.0",4th Edition, 2005.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Part B(Practical) PR:5.3) - Total Marks: 50</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-B Practical (PR:5.3) - Total marks:50</h4>
                 <p class="text-sm text-gray-600 mb-4">(In semester evaluation 20 & End semester evaluation 30)</p>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Design dynamic and interactive web pages to validate user input.</li>
@@ -396,7 +533,7 @@
                     <li>Apply PHP in a webpage.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Discussion:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Emphasis should be given on designing web pages using JavaScript and any one server side scripting language.</li>
                 </ul>
@@ -418,7 +555,12 @@
                     <li>To learn to design the trusted cloud Computing system.</li>
                 </ul>
 
-                <h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Prerequisites:</h3>
+                <ul class="list-disc list-dot mb-4 text-gray-700">
+                    <li>This section does not have specific prerequisites listed in the provided text.</li>
+                </ul>
+
+                <br><h3 class="text-xl font-medium mb-2 unit-title">Learning Outcome:</h3>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Compare the strengths and limitations of cloud computing.</li>
                     <li>Identify the architecture, infrastructure and delivery models of cloud computing.</li>
@@ -430,10 +572,10 @@
                     <li>Set a private cloud.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">PART-A Theory (TH:5.4) - Total Marks: 100</h4>
+                <br><h4 class="text-lg font-semibold mb-2 part-title-gradient">PART-A Theory (TH:5.4) - Total Marks: 100</h4>
                 <p class="text-sm text-gray-600 mb-4">(In Semester Evaluation -40 & End Semester Evaluation-60)</p>
 
-                <br><h5 class="text-base font-semibold mb-1 unit-title">Unit I: Cloud Architecture And Model (Marks:12)</h5>
+                <h5 class="text-base font-semibold mb-1 unit-title">Unit I: Cloud Architecture And Model (Marks:12)</h5>
                 <p class="text-gray-700 mb-2">Technologies for Network-Based System - System Models for Distributed and Cloud Computing - NIST Cloud Computing Reference Architecture. Cloud Models:- Characteristics - Cloud Services - Cloud models (IaaS, PaaS, SaaS) - Public vs Private Cloud-Cloud Solutions - Cloud ecosystem - Service management - Computing on demand.</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit II: Virtualization (Marks:12)</h5>
@@ -446,15 +588,15 @@
                 <p class="text-gray-700 mb-2">Parallel and Distributed Programming Paradigms - MapReduce, Twister and Iterative MapReduce - Hadoop Library from Apache - Mapping Applications - Programming Support - Google App Engine, Amazon AWS - Cloud Software Environments -Eucalyptus, Open Nebula, OpenStack, Aneka, CloudSim.</p>
 
                 <br><h5 class="text-base font-semibold mb-1 unit-title">Unit V: Security In The Cloud (Marks:12)</h5>
-                <p class="text-gray-700 mb-4">Security Overview - Cloud Security Challenges and Risks - Software-as-a-Service Security - Security Governance - Risk Management - Security Monitoring - Security Architecture Design - Data Security - Application Security - Virtual Machine Security - Identity Management and Access Control - Autonomic Security.</p>
+                <p class="text-700 mb-4">Security Overview - Cloud Security Challenges and Risks - Software-as-a-Service Security - Security Governance - Risk Management - Security Monitoring - Security Architecture Design - Data Security - Application Security - Virtual Machine Security - Identity Management and Access Control - Autonomic Security.</p>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Text Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Kai Hwang, Geoffrey C Fox, Jack G Dongarra, "Distributed and Cloud Computing, From Parallel Processing to the Internet of Things", Morgan Kaufmann Publishers, 2012.</li>
                     <li>John W.Rittinghouse and James F.Ransome, "Cloud Computing: Implementation, Management, and Security", CRC Press, 2010.</li>
                 </ul>
 
-                <h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
+                <br><h4 class="text-lg font-semibold mb-2 text-gray-800">Reference Books:</h4>
                 <ul class="list-disc list-dot mb-4 text-gray-700">
                     <li>Toby Velte, Anthony Velte, Robert Elsenpeter, "Cloud Computing, A Practical Approach", TMH, 2009.</li>
                     <li>Kumar Saurabh, "Cloud Computing - insights into New-Era Infrastructure", Wiley India, 2011.</li>
@@ -468,42 +610,75 @@
     </div>
 
     <script>
-        function toggleNav() {
-            const sidebar = document.getElementById("mySidebar");
-            // Check if sidebar is open or closed, then toggle
-            if (sidebar.classList.contains("open")) {
-                sidebar.classList.remove("open");
-            } else {
-                sidebar.classList.add("open");
-            }
+        // Function to open the sidebar
+        function openNav() {
+            document.getElementById("mySidebar").classList.add("open");
+            document.getElementById("sidebarOverlay").classList.add("active"); // Show overlay
         }
 
-        // Smooth scroll for anchor links and close sidebar
-        document.querySelectorAll('.sidebar a').forEach(anchor => {
+        // Function to close the sidebar
+        function closeNav() {
+            document.getElementById("mySidebar").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active"); // Hide overlay
+        }
+
+        // Smooth scroll for anchor links and close sidebar on navigation click (all screens)
+        document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => { // Selects only links starting with #
             anchor.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    e.preventDefault();
+                const targetElement = document.querySelector(href);
 
-                    document.querySelector(href).scrollIntoView({
+                if (targetElement) {
+                    e.preventDefault(); // Prevent default jump behavior
+
+                    const fixedHeaderHeight = document.getElementById('mainFixedHeader').offsetHeight;
+                    // Calculate the target position: element's top relative to viewport + current scroll position - fixed header height
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - fixedHeaderHeight;
+
+                    window.scrollTo({
+                        top: targetPosition,
                         behavior: 'smooth'
                     });
 
-                    toggleNav(); // Closes sidebar after clicking a link
+                    // Close sidebar after clicking a link on any screen size
+                    closeNav();
                 }
             });
         });
 
-        // Add a click listener to the main content area to close the sidebar if open
-        document.getElementById("main-content").addEventListener('click', function(event) {
-            const sidebar = document.getElementById("mySidebar");
-            const menuIcon = document.querySelector('.menu-icon');
+        // Function to highlight active section in sidebar on scroll
+        function highlightActiveSection() {
+            const sections = document.querySelectorAll('main section');
+            const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+            const fixedHeaderHeight = document.getElementById('mainFixedHeader').offsetHeight;
+            const scrollThreshold = fixedHeaderHeight + 20; // A little buffer below the fixed header
 
-            // If sidebar is open and the click is outside the sidebar AND not on the menu icon
-            if (sidebar.classList.contains("open") && !sidebar.contains(event.target) && !menuIcon.contains(event.target)) {
-                toggleNav();
-            }
-        });
+            let currentActiveSectionId = null;
+
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const sectionBottom = section.getBoundingClientRect().bottom;
+
+                // Check if the section's top is visible just below the header
+                // or if the section is largely in view
+                if (sectionTop <= scrollThreshold && sectionBottom > scrollThreshold) {
+                    currentActiveSectionId = section.id;
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active'); // Remove active from all links first
+                if (link.getAttribute('href').substring(1) === currentActiveSectionId) {
+                    link.classList.add('active'); // Add active to the matching link
+                }
+            });
+        }
+
+        // Add scroll event listener to update active section
+        window.addEventListener('scroll', highlightActiveSection);
+
+        // Call it once on load to set initial active section
+        window.addEventListener('load', highlightActiveSection);
     </script>
 </body>
 </html>
