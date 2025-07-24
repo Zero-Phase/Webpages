@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Stories</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="userstories.css" />
+</head>
+<body>
+    <h1 id="title">User Stories</h1>
+    <p id="description">This form is all about you</p>
+    <form id="survey-form">
+        <fieldset>
+            <label for="name" id="name-label">Name: <input type="text" id="name" required placeholder="Enter your full name" /></label>
+            <label id="email-label" for="email"> Email: <input type="email" id="email" required placeholder="Enter your email" /></label>
+            <label id="number-label" for="number"> Age (optional):<input type="number" min="13" max="120" id="number" placeholder="Age (in years)" /> </label>
+            <label for="dropdown">What do you want to learn?
+                <select id="dropdown" name="subject">
+                    <option value="">Select one</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">Javascript</option>
+                    <option value="react">React</option>
+                    <option value="typescript">Typescript</option>
+                </select>
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Select Your Designation</legend>
+            <label>
+                <input id="student" type="radio" name="designation" value="student"> Student
+            </label>
+            <label>
+                <input id="under-graduate" type="radio" name="designation" value="under-graduate"> Under-graduate
+            </label>
+            <label>
+                <input id="post-graduate" type="radio" name="designation" value="post-graduate"> Post-graduate
+            </label>
+            <label>
+                <input id="employee" type="radio" name="designation" value="employee"> Employee
+            </label>
+            <label>
+                <input id="other" type="radio" name="designation" value="other"> Other
+            </label>
+        </fieldset>
+
+        
+        <fieldset>
+            <legend>What are your interests? (Check all that apply)</legend>
+            <label>
+                <input type="checkbox" id="interest-frontend" name="interest" value="frontend"> Frontend Development
+            </label>
+            <label>
+                <input type="checkbox" id="interest-backend" name="interest" value="backend"> Backend Development
+            </label>
+            <label>
+                <input type="checkbox" id="interest-data-science" name="interest" value="data-science"> Data Science
+            </label>
+            <label>
+                <input type="checkbox" id="interest-mobile-dev" name="interest" value="mobile-dev"> Mobile Development
+            </label>
+        </fieldset>
+
+  
+        <fieldset>
+            <label for="comments">Any additional comments or hobbies?
+                <textarea id="comments" name="comments" rows="5" placeholder="Enter your comments here..."></textarea>
+            </label>
+        </fieldset>
+
+        <input type="submit" id="submit" value="Submit" />
+    </form>
+</body>
+</html>
